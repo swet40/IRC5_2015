@@ -13,23 +13,23 @@ class IRC5_2015(object):
 
         if footpath == KEY_FOOTPATH[0]:  # "None"
             if kerb_width < KEY_SAFETY_KERB_MIN_WIDTH:            
-                check = 'Fail'
+                check = False
                 return check #Kerb width is less than the minimum requirement of 750 mm.
             elif kerb_width >= KEY_SAFETY_KERB_MIN_WIDTH:
                 kerb_placement = KEY_SAFETY_KERB_PLACEMENT[1]  # "Both Sides"
-                check = 'Pass'
+                check = True
                 return kerb_placement,check  #Kerb width meets the minimum requirement of 750 mm.
         elif footpath == KEY_FOOTPATH[1]:  # "Single Side"
             if kerb_width < KEY_SAFETY_KERB_MIN_WIDTH:
-                check = 'Fail'
+                check = False
                 return check  #Kerb width is less than the minimum requirement of 750 mm.
             elif kerb_width >= KEY_SAFETY_KERB_MIN_WIDTH:
                 kerb_placement = KEY_SAFETY_KERB_PLACEMENT[0]  # "Single Side"
-                check = 'Pass'
+                check = True
                 return kerb_placement,check  #Kerb width meets the minimum requirement of 750 mm.
         
         
-    def cl_109_8_1_road_kerb_outline():
+    def cl_109_8_1_road_kerb_outline(design_dict):
         """Road kerb dimensions as per IRC 5:2015
         Clause 109.8.1 - Standard dimensions for road kerbs
         """
@@ -39,12 +39,13 @@ class IRC5_2015(object):
             'road_kerb_height': 225,  # height in mm
             'road_kerb_effective_height': 200,  # effective height in mm
             'road_kerb_edge_radius': 25  # edge radius in mm
-
         }
-        return road_kerb_dimensions
+
+        design_dict.update(road_kerb_dimensions)
+        return design_dict
     
     
-    def cl_109_8_3_safety_kerb_outline():
+    def cl_109_8_3_safety_kerb_outline(design_dict):
         # Clause 109.8.3 - A safety kerb will have the same outline as that of a road kerb, except that the top width shall not be less than 750 mm.
         
         # Get road kerb dimensions
@@ -65,9 +66,19 @@ class IRC5_2015(object):
         elif safety_kerb_dimensions['safety_kerb_width'] >= KEY_SAFETY_KERB_MIN_WIDTH:
             safety_kerb_dimensions['safety_kerb_width'] = safety_kerb_dimensions['safety_kerb_width']  # width in mm
 
+        design_dict.update(safety_kerb_dimensions)
+
+        safety_kerb_area = (safety_kerb_dimensions['safety_kerb_effective_width'] * safety_kerb_dimensions['safety_kerb_height'] +
+                            (math.pi * safety_kerb_dimensions['safety_kerb_edge_radius'] ** 2)/4   +
+                            safety_kerb_dimensions['safety_kerb_effective_width'] * safety_kerb_dimensions['safety_kerb_edge_radius'] +
+                            0.5 * safety_kerb_dimensions['safety_kerb_edge_radius'] * safety_kerb_dimensions['safety_kerb_effective_height'])  # in mm^2
+        design_dict['safety_kerb_area'] = safety_kerb_area  # in mm^2
+        return design_dict
+
 
     def cl_104_1_3_4_design_life(design_life):
         design_life = 100  # Design life in years as per IRC Clause 104.1.3.4
+        return design_life
 
     '''
     def cl_104_3_1_carriageway_width(carriageway_width, traffic_lanes):
@@ -89,7 +100,7 @@ class IRC5_2015(object):
             if footpath_width >= KEY_FOOTPATH_CLEAR_MIN_WIDTH:
                 return footpath_width
         else:
-            return "No footpath provided; footpath width requirement does not apply."
+            return False, "No footpath provided; footpath width requirement does not apply."
         
 
     # def cl_105_2_1_protection_to_user():
@@ -116,16 +127,91 @@ class IRC5_2015(object):
             print("WARNING, the skew angle is less than 30 degrees")
             return False
         
-    def cl_105_3_6_logitudinal_gradient():
-        return
-    
-
-    
-
-
-
+    def cl_105_3_6_logitudinal_gradient(logitudinal_gradient):
+        if logitudinal_gradient >= KEY_MIN_LOGITUDINAL_GRADIENT:
+            return True
+        else:
+            raise ValueError("Logitudinal gradient is less than the minimum requirement of 0.3 percent.")
         
-    
+    def cl_105_3_10_bridge_length_single_curve(bridge_length):
+        if bridge_length <= KEY_MAX_BRIDGE_LENGTH_SINGLE_CURVE:
+            return True
+        else:
+            raise ValueError("Bridge length exceeds the maximum limit of 30 meters for single curve alignment.")
 
-            
+    
+    def cl_109_5_wearing_coat(wearing_coat):
+
+        if wearing_coat == KEY_WEARING_COAT[0] or wearing_coat == KEY_WEARING_COAT[1]:
+            return True
         
+    def cl_109_6_3_shapes(barrier_type, footpath, railing_type, design_dict, crash_barrier_type):
+        if barrier_type == KEY_CRASH_BARRIER_TYPE[2]:  # Rigid
+            if footpath == KEY_FOOTPATH[1] or footpath == KEY_FOOTPATH[2]:  # Single Side or Both Sides
+                if railing_type == KEY_RAILING_TYPE[0]:  # RCC
+                    railing_dims = {
+                        'railing_height': None,  # Default height in mm, should be validated by cl_109_7_2_railing_height
+                        'railing_width': 275,  # in mm
+                        'railing_type': 'RCC',
+                        'crash_barrier_height': 900,  # in mm
+                        'crash_barrier_width': 450,  # in mm
+                        'crash_barrier_radius1': 50,  # in mm
+                        'crash_barrier_radius2': 250,  # in mm
+                        'crash_barrier_top_notch': 175,  # in mm
+                        'crash_barrier_base_notch': 100,  # in mm
+                        'crash_barrier_middle_length': 550  # in mm
+                    }
+                    # Validate railing height
+                    IRC5_2015.cl_109_7_2_railing_height(railing_dims['railing_height'])
+                    design_dict.update(railing_dims)
+                    
+                elif railing_type == KEY_RAILING_TYPE[1]:  # steel
+                    railing_dims = {
+                        'railing_height': None,  # Default height in mm, should be validated by cl_109_7_2_railing_height
+                        'railing_width': 200,  # in mm        check this
+                        'railing_type': 'steel',
+                        'crash_barrier_height': 900,  # in mm
+                        'crash_barrier_width': 450,  # in mm
+                        'crash_barrier_radius1': 50,  # in mm
+                        'crash_barrier_radius2': 250,  # in mm
+                        'crash_barrier_top_notch': 175,  # in mm
+                        'crash_barrier_base_notch': 100,  # in mm
+                        'crash_barrier_middle_length': 550  # in mm
+                    }
+                    # Validate railing height
+                    IRC5_2015.cl_109_7_2_railing_height(railing_dims['railing_height'])
+                    design_dict.update(railing_dims)
+            elif footpath == KEY_FOOTPATH[0] :  # None
+                if crash_barrier_type == KEY_RIGID_CRASH_BARRIER_TYPE[0]:  # IRC-5R
+                    crash_barrier_dims = {
+                        'crash_barrier_height': 1100,  # in mm
+                        'crash_barrier_width': 450,  # in mm
+                        'crash_barrier_radius1': 50, # in mm
+                        'crash_barrier_radius2': 250,  # in mm
+                        'crash_barrier_top_notch': 175,  # in mm
+                        'crash_barrier_base_notch': 100,  # in mm
+                        'crash_barrier_middle_length': 750  # in mm
+                    }
+                    design_dict.update(crash_barrier_dims)
+                elif crash_barrier_type == KEY_RIGID_CRASH_BARRIER_TYPE[1]:  # High Containment
+                    crash_barrier_dims = {
+                        'crash_barrier_height': 1550,  # in mm
+                        'crash_barrier_width': 525,  # in mm
+                        'crash_barrier_radius1': 50, # in mm
+                        'crash_barrier_radius2': 250,  # in mm
+                        'crash_barrier_top_notch': 250,  # in mm
+                        'crash_barrier_base_notch': 100,  # in mm
+                        'crash_barrier_middle_length': 1200  # in mm
+                    }
+                    design_dict.update(crash_barrier_dims)
+
+
+
+
+
+
+
+
+
+
+

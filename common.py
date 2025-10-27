@@ -1,0 +1,13 @@
+KEY_FOOTPATH = ["None", "Single Side", "Both Sides"]
+KEY_SAFETY_KERB_MIN_WIDTH = 750  # in mm
+KEY_SAFETY_KERB_PLACEMENT = ['Single Side', 'Both Sides', ]
+KEY_FOOTPATH_CLEAR_MIN_WIDTH = 1500  # in mm
+KEY_RAILING_MIN_HEIGHT = [1100, 1250] # in mm
+KEY_CYCLE_TRACK = ['None', 'Single'] 
+KEY_MIN_SKEW_ANGLE = 30  # in degrees
+KEY_WEARING_COAT = ['bituminous', 'concrete']
+KEY_CRASH_BARRIER_TYPE = ['Flexible', 'Semi-Rigid', 'Rigid']
+KEY_RAILING_TYPE = ['RCC', 'steel']
+KEY_MIN_LOGITUDINAL_GRADIENT = 0.3  # in percent
+KEY_MAX_BRIDGE_LENGTH_SINGLE_CURVE = 30  # in meters
+KEY_RIGID_CRASH_BARRIER_TYPE = ['IRC-5R', 'High Containment']
