@@ -91,24 +91,39 @@ class IRC5_2015(object):
         # Footpath width requirements (IRC Clause 104.3.6)
         if footpath == KEY_FOOTPATH[1]:  # "Single Side"
             if footpath_width < KEY_FOOTPATH_CLEAR_MIN_WIDTH:
-                return ValueError("Footpath width is less than the minimum requirement of 1500 mm.")
+                print("Footpath width is less than the minimum requirement of 1500 mm.")
+                return None
             if footpath_width >= KEY_FOOTPATH_CLEAR_MIN_WIDTH:
                 return footpath_width
         elif footpath == KEY_FOOTPATH[2]:  # "Both Sides"
             if footpath_width < KEY_FOOTPATH_CLEAR_MIN_WIDTH:
-                return ValueError("Footpath width is less than the minimum requirement of 1500 mm.")
+                print("Footpath width is less than the minimum requirement of 1500 mm.")
+                return None
             if footpath_width >= KEY_FOOTPATH_CLEAR_MIN_WIDTH:
                 return footpath_width
         else:
-            return False, "No footpath provided; footpath width requirement does not apply."
+            return None, print("No footpath provided; footpath width requirement does not apply.")
         
 
-    # def cl_105_2_1_protection_to_user():
+    def cl_105_2_1_protection_to_user(footpath, cycle_track, railing_type, design_dict, crash_barrier_type):
+        if footpath == KEY_FOOTPATH[0]:  # "None"
+            return
+    
 
 
-    def cl_109_7_2_railing_height(railing_height):
+    def cl_109_7_2_3_railing_height(footpath, railing_height):
+        # Clause 109.7.2 Railings or parapets shall have a minimum 1.1 meter height above the adjacent roadway or footway safety kerb surface
+        if footpath == KEY_FOOTPATH[0,1,2]:     #None, Single Side, Both Sides
+            if railing_height < KEY_RAILING_MIN_HEIGHT[0]:
+                railing_height = KEY_RAILING_MIN_HEIGHT[0]
+                print("railing height is less than minimum railing height, changed to minimum height")
+
+    
+    '''
+    def cl_109_7_2_4_railing_height(railing_height):
+        # for this the placemnent of cycle track is needed
         # Clause 109.7.2.3 Railings or parapets shall have a minimum 1.1 meter height above the adjacent roadway or footway safety kerb surface
-        if KEY_CYCLE_TRACK[0]:
+        if KEY_CYCLE_TRACK[0]:     #None
             if railing_height < KEY_RAILING_MIN_HEIGHT[0]:
                 railing_height = KEY_RAILING_MIN_HEIGHT[0]
                 print("railing height is less than minimum railing height, changed to minimum height")
@@ -116,7 +131,7 @@ class IRC5_2015(object):
             if railing_height < KEY_RAILING_MIN_HEIGHT[1]:
                 railing_height = KEY_RAILING_MIN_HEIGHT[1]
                 print("railing height is less than minimum railing height, changed to minimum height")
-
+    '''
     
 
     def cl_105_3_3_skew_angle(skew_angle):
