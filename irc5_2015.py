@@ -105,9 +105,45 @@ class IRC5_2015(object):
             return None, print("No footpath provided; footpath width requirement does not apply.")
         
 
-    def cl_105_2_1_protection_to_user(footpath, cycle_track, railing_type, design_dict, crash_barrier_type):
-        if footpath == KEY_FOOTPATH[0]:  # "None"
-            return
+    def cl_105_2_1_protection_to_user(component_placement):
+        """
+    Applies Clause 105.2.1 protection requirements for edges of structures.
+
+    As per Clause 105.2.1, railings or crash barriers are required along the edges of
+    structures. Additionally, where a footpath or cycle track is directly adjacent to the
+    carriageway, a crash barrier must be provided between them to safely redirect any
+    errant vehicular traffic.
+
+    Parameters
+    ----------
+    component_placement : list of str
+        A list defining the cross-sectional arrangement of components in order
+        (e.g., ['Railing', 'Footpath', 'Carriageway', 'Footpath', 'Railing']).
+        The presence of 'Footpath' is optional and may not always occur.
+        The function modifies this list directly.
+
+    Returns
+    -------
+    list of str
+        The same list passed to the function, updated to include 'Crash Barrier'
+        between 'Carriageway' and 'Footpath' wherever they are adjacent.
+    """
+        i = 0
+        while i < len(component_placement) - 1:
+            pair = (component_placement[i], component_placement[i+1])
+
+            # Check adjacency
+            if pair == ('Carriageway', 'Footpath') or pair == ('Footpath', 'Carriageway'):
+                component_placement.insert(i+1, 'Crash Barrier')
+                i += 2  # Skip the newly inserted element to avoid infinite loop
+            if pair == ('Carriageway', 'Cycle Track') or pair == ('Cycle Track', 'Carriageway'):
+                component_placement.insert(i+1, 'Crash Barrier')
+                i += 2  # Skip the newly inserted element to avoid infinite loop
+            else:
+                i += 1
+
+        return component_placement
+
     
 
 
@@ -146,13 +182,13 @@ class IRC5_2015(object):
         if logitudinal_gradient >= KEY_MIN_LOGITUDINAL_GRADIENT:
             return True
         else:
-            raise ValueError("Logitudinal gradient is less than the minimum requirement of 0.3 percent.")
+            return print("Logitudinal gradient is less than the minimum requirement of 0.3 percent.")
         
     def cl_105_3_10_bridge_length_single_curve(bridge_length):
         if bridge_length <= KEY_MAX_BRIDGE_LENGTH_SINGLE_CURVE:
             return True
         else:
-            raise ValueError("Bridge length exceeds the maximum limit of 30 meters for single curve alignment.")
+            return print("Bridge length exceeds the maximum limit of 30 meters for single curve alignment.")
 
     
     def cl_109_5_wearing_coat(wearing_coat):
