@@ -4,6 +4,7 @@ from common import *
 
 class IRC5_2015(object):
 
+    @staticmethod
     def cl_101_41_safety_kerb_width(kerb_width, footpath):
         """Safety kerb width requirements (IRC Clause 101.41)
     
@@ -28,7 +29,7 @@ class IRC5_2015(object):
                 check = True
                 return kerb_placement,check  #Kerb width meets the minimum requirement of 750 mm.
         
-        
+    @staticmethod
     def cl_109_8_1_road_kerb_outline(design_dict):
         """Road kerb dimensions as per IRC 5:2015
         Clause 109.8.1 - Standard dimensions for road kerbs
@@ -44,7 +45,7 @@ class IRC5_2015(object):
         design_dict.update(road_kerb_dimensions)
         return design_dict
     
-    
+    @staticmethod
     def cl_109_8_3_safety_kerb_outline(design_dict):
         # Clause 109.8.3 - A safety kerb will have the same outline as that of a road kerb, except that the top width shall not be less than 750 mm.
         
@@ -75,7 +76,7 @@ class IRC5_2015(object):
         design_dict['safety_kerb_area'] = safety_kerb_area  # in mm^2
         return design_dict
 
-
+    @staticmethod
     def cl_104_1_3_4_design_life(design_life):
         design_life = 100  # Design life in years as per IRC Clause 104.1.3.4
         return design_life
@@ -86,7 +87,7 @@ class IRC5_2015(object):
         if carriageway_width == 4250: # Single lane
     '''      
 
-
+    @staticmethod
     def cl_104_3_6_footpath_width(footpath, footpath_width):
         # Footpath width requirements (IRC Clause 104.3.6)
         if footpath == KEY_FOOTPATH[1]:  # "Single Side"
@@ -104,7 +105,7 @@ class IRC5_2015(object):
         else:
             return None, print("No footpath provided; footpath width requirement does not apply.")
         
-
+    @staticmethod
     def cl_105_2_1_protection_to_user(component_placement):
         """
     Applies Clause 105.2.1 protection requirements for edges of structures.
@@ -146,10 +147,10 @@ class IRC5_2015(object):
 
     
 
-
+    @staticmethod
     def cl_109_7_2_3_railing_height(footpath, railing_height):
         # Clause 109.7.2 Railings or parapets shall have a minimum 1.1 meter height above the adjacent roadway or footway safety kerb surface
-        if footpath == KEY_FOOTPATH[0,1,2]:     #None, Single Side, Both Sides
+        if footpath == KEY_FOOTPATH:     #None, Single Side, Both Sides
             if railing_height < KEY_RAILING_MIN_HEIGHT[0]:
                 railing_height = KEY_RAILING_MIN_HEIGHT[0]
                 print("railing height is less than minimum railing height, changed to minimum height")
@@ -169,7 +170,7 @@ class IRC5_2015(object):
                 print("railing height is less than minimum railing height, changed to minimum height")
     '''
     
-
+    @staticmethod
     def cl_105_3_3_skew_angle(skew_angle):
         if skew_angle > KEY_MIN_SKEW_ANGLE:
             print("The skew angle is greater than 30 degrees")
@@ -177,13 +178,16 @@ class IRC5_2015(object):
         if skew_angle <= KEY_MIN_SKEW_ANGLE:
             print("WARNING, the skew angle is less than 30 degrees")
             return False
-        
+
+
+    @staticmethod     
     def cl_105_3_6_logitudinal_gradient(logitudinal_gradient):
         if logitudinal_gradient >= KEY_MIN_LOGITUDINAL_GRADIENT:
             return True
         else:
             return print("Logitudinal gradient is less than the minimum requirement of 0.3 percent.")
-        
+
+    @staticmethod
     def cl_105_3_10_bridge_length_single_curve(bridge_length):
         if bridge_length <= KEY_MAX_BRIDGE_LENGTH_SINGLE_CURVE:
             return True
@@ -191,11 +195,14 @@ class IRC5_2015(object):
             return print("Bridge length exceeds the maximum limit of 30 meters for single curve alignment.")
 
     
+    @staticmethod
     def cl_109_5_wearing_coat(wearing_coat):
 
         if wearing_coat == KEY_WEARING_COAT[0] or wearing_coat == KEY_WEARING_COAT[1]:
             return True
-        
+
+
+    @staticmethod
     def cl_109_6_3_shapes(barrier_type, footpath, railing_type, design_dict, crash_barrier_type):
         if barrier_type == KEY_CRASH_BARRIER_TYPE[2]:  # Rigid
             if footpath == KEY_FOOTPATH[1] or footpath == KEY_FOOTPATH[2]:  # Single Side or Both Sides
