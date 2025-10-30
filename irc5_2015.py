@@ -50,7 +50,7 @@ class IRC5_2015(object):
         # Clause 109.8.3 - A safety kerb will have the same outline as that of a road kerb, except that the top width shall not be less than 750 mm.
         
         # Get road kerb dimensions
-        kerb_dims = IRC5_2015.cl_109_8_1_road_kerb_outline()
+        kerb_dims = IRC5_2015.cl_109_8_1_road_kerb_outline(design_dict)
 
         # Create safety kerb dimensions based on road kerb dimensions
 
