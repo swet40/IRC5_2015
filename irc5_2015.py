@@ -150,11 +150,24 @@ class IRC5_2015(object):
 
     @staticmethod
     def cl_109_7_2_3_railing_height(footpath, railing_height):
-        # Clause 109.7.2 Railings or parapets shall have a minimum 1.1 meter height above the adjacent roadway or footway safety kerb surface
-        if footpath == KEY_FOOTPATH:     #None, Single Side, Both Sides
+        """Validates and adjusts railing height according to IRC Clause 109.7.2
+        
+        Railings or parapets shall have a minimum 1.1 meter height above the adjacent 
+        roadway or footway safety kerb surface.
+        
+        Args:
+            footpath: String indicating footpath type ("None", "Single Side", or "Both Sides")
+            railing_height: Current railing height in mm
+            
+        Returns:
+            float: The validated railing height in mm, adjusted to minimum if necessary
+        """
+        if footpath in KEY_FOOTPATH:     # None, Single Side, Both Sides
             if railing_height < KEY_RAILING_MIN_HEIGHT[0]:
                 railing_height = KEY_RAILING_MIN_HEIGHT[0]
-                print("railing height is less than minimum railing height, changed to minimum height")
+                print("Railing height is less than minimum railing height, adjusted to minimum height of 1100 mm")
+        
+        return railing_height
 
     
     '''
