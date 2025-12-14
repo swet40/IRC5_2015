@@ -46,46 +46,57 @@ class IRC5_2015(object):
         Clause 109.8.1 - Standard dimensions for road kerbs
         """
         road_kerb_dimensions = {
-            'road_kerb_width': 225,  # width in mm
-            'road_kerb_effective_width': 175,  # effective width in mm, its minimum value
-            'road_kerb_height': 225,  # height in mm
-            'road_kerb_effective_height': 200,  # effective height in mm
-            'road_kerb_edge_radius': 25  # edge radius in mm
+            'clause': "IRC 5:2015 109.8.1",
+            'road_kerb_width': 225 * mm,  # width in mm
+            'road_kerb_effective_width': 175 * mm,  # effective width in mm, its minimum value
+            'road_kerb_height': 225 * mm,  # height in mm
+            'road_kerb_effective_height': 200 * mm,  # effective height in mm
+            'road_kerb_edge_radius': 25 * mm # edge radius in mm
         }
 
-        design_dict.update(road_kerb_dimensions)
-        return design_dict
+        updated_design = design_dict.copy()
+        updated_design.update(road_kerb_dimensions)
+        return updated_design
     
     
     def cl_109_8_3_safety_kerb_outline(design_dict):
         # Clause 109.8.3 - A safety kerb will have the same outline as that of a road kerb, except that the top width shall not be less than 750 mm.
         
         # Get road kerb dimensions
-        kerb_dims = IRC5_2015.cl_109_8_1_road_kerb_outline()
+        road_kerb = IRC5_2015.cl_109_8_1_road_kerb_outline({})
 
         # Create safety kerb dimensions based on road kerb dimensions
 
         safety_kerb_dimensions = {
-            'safety_kerb_width': kerb_dims['road_kerb_width'],  # width in mm
-            'safety_kerb_effective_width': kerb_dims['road_kerb_effective_width'],  # effective width in mm
-            'safety_kerb_height': kerb_dims['road_kerb_height'],  # height in mm
-            'safety_kerb_effective_height': kerb_dims['road_kerb_effective_height'],  # effective height in mm
-            'safety_kerb_edge_radius': kerb_dims['road_kerb_edge_radius']  # edge radius in mm
+            'safety_kerb_width': road_kerb['road_kerb_width'],  # width in mm
+            'safety_kerb_effective_width': road_kerb['road_kerb_effective_width'],  # effective width in mm
+            'safety_kerb_height': road_kerb['road_kerb_height'],  # height in mm
+            'safety_kerb_effective_height': road_kerb['road_kerb_effective_height'],  # effective height in mm
+            'safety_kerb_edge_radius': road_kerb['road_kerb_edge_radius'],  # edge radius in mm
+            'min_required_top_width': KEY_SAFETY_KERB_MIN_WIDTH,
+            "is_width_compliant": road_kerb["road_kerb_width"] >= KEY_SAFETY_KERB_MIN_WIDTH,
         }
 
-        if safety_kerb_dimensions['safety_kerb_width'] < KEY_SAFETY_KERB_MIN_WIDTH:
-            safety_kerb_dimensions['safety_kerb_width'] = KEY_SAFETY_KERB_MIN_WIDTH  # width in mm
-        elif safety_kerb_dimensions['safety_kerb_width'] >= KEY_SAFETY_KERB_MIN_WIDTH:
-            safety_kerb_dimensions['safety_kerb_width'] = safety_kerb_dimensions['safety_kerb_width']  # width in mm
+        updated_design = design_dict.copy()
+        updated_design.update(safety_kerb_dimensions)
 
-        design_dict.update(safety_kerb_dimensions)
+        return updated_design
 
-        safety_kerb_area = (safety_kerb_dimensions['safety_kerb_effective_width'] * safety_kerb_dimensions['safety_kerb_height'] +
-                            (math.pi * safety_kerb_dimensions['safety_kerb_edge_radius'] ** 2)/4   +
-                            safety_kerb_dimensions['safety_kerb_effective_width'] * safety_kerb_dimensions['safety_kerb_edge_radius'] +
-                            0.5 * safety_kerb_dimensions['safety_kerb_edge_radius'] * safety_kerb_dimensions['safety_kerb_effective_height'])  # in mm^2
-        design_dict['safety_kerb_area'] = safety_kerb_area  # in mm^2
-        return design_dict
+    # Utility function to compute safety kerb area
+    def compute_safety_kerb_area(kerb):
+        r = kerb["safety_kerb_edge_radius"]
+        b = kerb["safety_kerb_effective_width"]
+        h = kerb["safety_kerb_height"]
+        he = kerb["safety_kerb_effective_height"]
+
+        area = (
+            b * h +
+            (math.pi * r ** 2) / 4 +
+            b * r +
+            0.5 * r * he
+        )
+
+        return area
 
 
     def cl_104_1_3_4_design_life(design_life):

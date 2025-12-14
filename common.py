@@ -1,3 +1,19 @@
+# Unit definitions
+kilo = 1e3
+milli = 1e-3
+N = 1
+m = 1
+mm = milli * m
+m2 = m ** 2
+m3 = m ** 3
+m4 = m ** 4
+kN = kilo * N
+Pa = 1
+MPa = N / ((mm) ** 2)
+GPa = kilo * MPa
+kPa = kilo * Pa
+
+
 KEY_FOOTPATH = ["None", "Single Side", "Both Sides"]
 KEY_SAFETY_KERB_MIN_WIDTH = 750  # in mm
 KEY_SAFETY_KERB_PLACEMENT = ['Single Side', 'Both Sides', ]
