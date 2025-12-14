@@ -5,28 +5,40 @@ from common import *
 class IRC5_2015(object):
 
     def cl_101_41_safety_kerb_width(kerb_width, footpath):
-        """Safety kerb width requirements (IRC Clause 101.41)
-    
-           IRC 5:2015 Standard: Minimum width = 750mm (0.75m)
         """
-        # A kerb having width of at least 750 mm for occasional use by pedestrians, where footpath is not provided.
+        IRC 5:2015 – Clause 101.41
+        Safety kerb requirement when footpath is not provided.
+        """
 
-        if footpath == KEY_FOOTPATH[0]:  # "None"
-            if kerb_width < KEY_SAFETY_KERB_MIN_WIDTH:            
-                check = False
-                return check #Kerb width is less than the minimum requirement of 750 mm.
-            elif kerb_width >= KEY_SAFETY_KERB_MIN_WIDTH:
-                kerb_placement = KEY_SAFETY_KERB_PLACEMENT[1]  # "Both Sides"
-                check = True
-                return kerb_placement,check  #Kerb width meets the minimum requirement of 750 mm.
-        elif footpath == KEY_FOOTPATH[1]:  # "Single Side"
-            if kerb_width < KEY_SAFETY_KERB_MIN_WIDTH:
-                check = False
-                return check  #Kerb width is less than the minimum requirement of 750 mm.
-            elif kerb_width >= KEY_SAFETY_KERB_MIN_WIDTH:
-                kerb_placement = KEY_SAFETY_KERB_PLACEMENT[0]  # "Single Side"
-                check = True
-                return kerb_placement,check  #Kerb width meets the minimum requirement of 750 mm.
+        result = {
+            "applicable": False,
+            "is_compliant": True,
+            "required_min_width": KEY_SAFETY_KERB_MIN_WIDTH,
+            "provided_width": kerb_width,
+            "remarks": ""
+        }
+
+        # Clause applies only if footpath is NOT provided
+        if footpath != KEY_FOOTPATH[0]:  # "None"
+            result["remarks"] = "Clause 101.41 not applicable as footpath is provided."
+            return result
+
+        result["applicable"] = True
+
+        if kerb_width < KEY_SAFETY_KERB_MIN_WIDTH:
+            result["is_compliant"] = False
+            result["remarks"] = (
+                "Kerb width is less than minimum 750 mm required "
+                "when footpath is not provided."
+            )
+        else:
+            result["remarks"] = (
+                "Kerb width satisfies minimum 750 mm requirement "
+                "for occasional pedestrian use."
+            )
+
+        return result
+
         
         
     def cl_109_8_1_road_kerb_outline(design_dict):
