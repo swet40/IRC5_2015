@@ -4,6 +4,7 @@ from common import *
 
 class IRC5_2015(object):
 
+    @staticmethod
     def cl_101_41_safety_kerb_width(kerb_width, footpath):
         """
         IRC 5:2015 – Clause 101.41
@@ -58,7 +59,7 @@ class IRC5_2015(object):
         updated_design.update(road_kerb_dimensions)
         return updated_design
     
-    
+    @staticmethod
     def cl_109_8_3_safety_kerb_outline(design_dict):
         # Clause 109.8.3 - A safety kerb will have the same outline as that of a road kerb, except that the top width shall not be less than 750 mm.
         
@@ -109,29 +110,94 @@ class IRC5_2015(object):
         if carriageway_width == 4250: # Single lane
     '''      
 
-
+    @staticmethod
     def cl_104_3_6_footpath_width(footpath, footpath_width):
-        # Footpath width requirements (IRC Clause 104.3.6)
-        if footpath == KEY_FOOTPATH[1]:  # "Single Side"
-            if footpath_width < KEY_FOOTPATH_CLEAR_MIN_WIDTH:
-                return ValueError("Footpath width is less than the minimum requirement of 1500 mm.")
-            if footpath_width >= KEY_FOOTPATH_CLEAR_MIN_WIDTH:
-                return footpath_width
-        elif footpath == KEY_FOOTPATH[2]:  # "Both Sides"
-            if footpath_width < KEY_FOOTPATH_CLEAR_MIN_WIDTH:
-                return ValueError("Footpath width is less than the minimum requirement of 1500 mm.")
-            if footpath_width >= KEY_FOOTPATH_CLEAR_MIN_WIDTH:
-                return footpath_width
-        else:
-            return False, "No footpath provided; footpath width requirement does not apply."
+        """Footpath width requirements (IRC Clause 104.3.6)
         
+        Returns:
+            float or None: Returns the footpath width if valid, None if invalid or not applicable
+        """
+        if footpath == KEY_FOOTPATH[0]:  # "None"
+            print("No footpath provided; footpath width requirement does not apply.")
+            return None
+            
+        if footpath in [KEY_FOOTPATH[1], KEY_FOOTPATH[2]]:  # "Single Side" or "Both Sides"
+            if footpath_width < KEY_FOOTPATH_CLEAR_MIN_WIDTH:
+                print("Footpath width is less than the minimum requirement of 1500 mm.")
+                return None
+            return footpath_width
+            
+        return None  # For any invalid footpath value
+        
+    @staticmethod
+    def cl_105_2_1_protection_to_user(component_placement):
+        """
+    Applies Clause 105.2.1 protection requirements for edges of structures.
 
-    # def cl_105_2_1_protection_to_user():
+    As per Clause 105.2.1, railings or crash barriers are required along the edges of
+    structures. Additionally, where a footpath or cycle track is directly adjacent to the
+    carriageway, a crash barrier must be provided between them to safely redirect any
+    errant vehicular traffic.
 
+    Parameters
+    ----------
+    component_placement : list of str
+        A list defining the cross-sectional arrangement of components in order
+        (e.g., ['Railing', 'Footpath', 'Carriageway', 'Footpath', 'Railing']).
+        The presence of 'Footpath' is optional and may not always occur.
+        The function modifies this list directly.
 
-    def cl_109_7_2_railing_height(railing_height):
+    Returns
+    -------
+    list of str
+        The same list passed to the function, updated to include 'Crash Barrier'
+        between 'Carriageway' and 'Footpath' wherever they are adjacent.
+    """
+        i = 0
+        while i < len(component_placement) - 1:
+            pair = (component_placement[i], component_placement[i+1])
+
+            # Check adjacency
+            if pair == ('Carriageway', 'Footpath') or pair == ('Footpath', 'Carriageway'):
+                component_placement.insert(i+1, 'Crash Barrier')
+                i += 2  # Skip the newly inserted element to avoid infinite loop
+            if pair == ('Carriageway', 'Cycle Track') or pair == ('Cycle Track', 'Carriageway'):
+                component_placement.insert(i+1, 'Crash Barrier')
+                i += 2  # Skip the newly inserted element to avoid infinite loop
+            else:
+                i += 1
+
+        return component_placement
+
+    
+
+    @staticmethod
+    def cl_109_7_2_3_railing_height(footpath, railing_height):
+        """Validates and adjusts railing height according to IRC Clause 109.7.2
+        
+        Railings or parapets shall have a minimum 1.1 meter height above the adjacent 
+        roadway or footway safety kerb surface.
+        
+        Args:
+            footpath: String indicating footpath type ("None", "Single Side", or "Both Sides")
+            railing_height: Current railing height in mm
+            
+        Returns:
+            float: The validated railing height in mm, adjusted to minimum if necessary
+        """
+        if footpath in KEY_FOOTPATH:     # None, Single Side, Both Sides
+            if railing_height < KEY_RAILING_MIN_HEIGHT[0]:
+                railing_height = KEY_RAILING_MIN_HEIGHT[0]
+                print("Railing height is less than minimum railing height, adjusted to minimum height of 1100 mm")
+        
+        return railing_height
+
+    
+    '''
+    def cl_109_7_2_4_railing_height(railing_height):
+        # for this the placemnent of cycle track is needed
         # Clause 109.7.2.3 Railings or parapets shall have a minimum 1.1 meter height above the adjacent roadway or footway safety kerb surface
-        if KEY_CYCLE_TRACK[0]:
+        if KEY_CYCLE_TRACK[0]:     #None
             if railing_height < KEY_RAILING_MIN_HEIGHT[0]:
                 railing_height = KEY_RAILING_MIN_HEIGHT[0]
                 print("railing height is less than minimum railing height, changed to minimum height")
@@ -139,9 +205,9 @@ class IRC5_2015(object):
             if railing_height < KEY_RAILING_MIN_HEIGHT[1]:
                 railing_height = KEY_RAILING_MIN_HEIGHT[1]
                 print("railing height is less than minimum railing height, changed to minimum height")
-
+    '''
     
-
+    @staticmethod
     def cl_105_3_3_skew_angle(skew_angle):
         if skew_angle > KEY_MIN_SKEW_ANGLE:
             print("The skew angle is greater than 30 degrees")
@@ -149,25 +215,31 @@ class IRC5_2015(object):
         if skew_angle <= KEY_MIN_SKEW_ANGLE:
             print("WARNING, the skew angle is less than 30 degrees")
             return False
-        
+
+
+    @staticmethod     
     def cl_105_3_6_logitudinal_gradient(logitudinal_gradient):
         if logitudinal_gradient >= KEY_MIN_LOGITUDINAL_GRADIENT:
             return True
         else:
-            raise ValueError("Logitudinal gradient is less than the minimum requirement of 0.3 percent.")
-        
+            return print("Logitudinal gradient is less than the minimum requirement of 0.3 percent.")
+
+    @staticmethod
     def cl_105_3_10_bridge_length_single_curve(bridge_length):
         if bridge_length <= KEY_MAX_BRIDGE_LENGTH_SINGLE_CURVE:
             return True
         else:
-            raise ValueError("Bridge length exceeds the maximum limit of 30 meters for single curve alignment.")
+            return print("Bridge length exceeds the maximum limit of 30 meters for single curve alignment.")
 
     
+    @staticmethod
     def cl_109_5_wearing_coat(wearing_coat):
 
         if wearing_coat == KEY_WEARING_COAT[0] or wearing_coat == KEY_WEARING_COAT[1]:
             return True
-        
+
+
+    @staticmethod
     def cl_109_6_3_shapes(barrier_type, footpath, railing_type, design_dict, crash_barrier_type):
         if barrier_type == KEY_CRASH_BARRIER_TYPE[2]:  # Rigid
             if footpath == KEY_FOOTPATH[1] or footpath == KEY_FOOTPATH[2]:  # Single Side or Both Sides
