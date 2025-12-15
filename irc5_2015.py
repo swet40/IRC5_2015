@@ -100,34 +100,77 @@ class IRC5_2015(object):
         return area
 
 
-    def cl_104_1_3_4_design_life(design_life):
-        design_life = 100  # Design life in years as per IRC Clause 104.1.3.4
-        return design_life
+    def cl_104_1_3_4_design_life(design_dict):
+        """
+        IRC 5:2015
+        Table 104.1.3.4 – Assumed design life
+        """
 
-    '''
-    def cl_104_3_1_carriageway_width(carriageway_width, traffic_lanes):
-        # Carriageway width requirements (IRC Clause 104.3.1)
-        if carriageway_width == 4250: # Single lane
-    '''      
+        updated_design = design_dict.copy()
+        updated_design.update({
+            "clause_104_1_3_4": "IRC 5:2015 Table 104.1.3.4",
+            "design_life_years": 100
+        })
+
+        return updated_design
+
+
+    @staticmethod  
+    def cl_104_3_1_carriageway_width(carriageway_width):
+        # Clause 104.3.1 - Minimum carriageway width: 4250 mm (1-lane), 7500 mm (2-lane), +3500 mm per extra lane.
+        traffic_lanes = 0
+        if carriageway_width >= KEY_MIN_SINGLE_LANE:
+            traffic_lanes = 1
+            if carriageway_width >= KEY_MIN_DOUBLE_LANE:
+                traffic_lanes = 2
+                remaining = carriageway_width - KEY_MIN_DOUBLE_LANE
+                while remaining >= KEY_ADDITIONAL_LANE:
+                    traffic_lanes += 1
+                    remaining -= KEY_ADDITIONAL_LANE
+
+        if traffic_lanes == 0:
+            return False, f"Carriageway width {carriageway_width:.0f}mm is insufficient for any lane (minimum: 4250mm)"
+
+        return True, f"Carriageway width {carriageway_width:.0f}mm supports {traffic_lanes} lane(s)"
 
     @staticmethod
     def cl_104_3_6_footpath_width(footpath, footpath_width):
-        """Footpath width requirements (IRC Clause 104.3.6)
-        
-        Returns:
-            float or None: Returns the footpath width if valid, None if invalid or not applicable
         """
+        IRC 5:2015
+        Clause 104.3.6 – Minimum clear width of footpath
+        """
+
+        result = {
+            "clause": "IRC 5:2015 104.3.6",
+            "applicable": False,
+            "required_min_clear_width": 1.5,  # meters
+            "provided_clear_width": footpath_width,
+            "is_compliant": True,
+            "remarks": ""
+        }
+
         if footpath == KEY_FOOTPATH[0]:  # "None"
-            print("No footpath provided; footpath width requirement does not apply.")
-            return None
-            
-        if footpath in [KEY_FOOTPATH[1], KEY_FOOTPATH[2]]:  # "Single Side" or "Both Sides"
-            if footpath_width < KEY_FOOTPATH_CLEAR_MIN_WIDTH:
-                print("Footpath width is less than the minimum requirement of 1500 mm.")
-                return None
-            return footpath_width
-            
-        return None  # For any invalid footpath value
+            result["remarks"] = "Footpath not provided; clause not applicable."
+            return result
+
+        result["applicable"] = True
+
+        if footpath_width is None:
+            result["is_compliant"] = False
+            result["remarks"] = "Footpath provided but clear width not specified."
+            return result
+
+        if footpath_width < result["required_min_clear_width"]:
+            result["is_compliant"] = False
+            result["remarks"] = (
+                "Footpath clear width is less than minimum 1.5 m required "
+                "by IRC 5:2015 Clause 104.3.6."
+            )
+        else:
+            result["remarks"] = "Footpath clear width satisfies Clause 104.3.6."
+
+        return result
+
         
     @staticmethod
     def cl_105_2_1_protection_to_user(component_placement):
