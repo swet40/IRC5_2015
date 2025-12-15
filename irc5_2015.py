@@ -1,3 +1,9 @@
+"""
+Module for IRC 5:2015 bridge design clauses.
+@author: Aditya Donde
+
+"""
+
 import math
 from common import *
 
@@ -157,7 +163,7 @@ class IRC5_2015(object):
 
         return result
     
-    
+
     @staticmethod
     def cl_104_3_6_footpath_width(footpath, footpath_width):
         """
