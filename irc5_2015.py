@@ -116,23 +116,48 @@ class IRC5_2015(object):
 
 
     @staticmethod  
-    def cl_104_3_1_carriageway_width(carriageway_width):
+    def cl_104_3_1_carriageway_width(carriageway_width, num_lanes):
         # Clause 104.3.1 - Minimum carriageway width: 4250 mm (1-lane), 7500 mm (2-lane), +3500 mm per extra lane.
-        traffic_lanes = 0
-        if carriageway_width >= KEY_MIN_SINGLE_LANE:
-            traffic_lanes = 1
-            if carriageway_width >= KEY_MIN_DOUBLE_LANE:
-                traffic_lanes = 2
-                remaining = carriageway_width - KEY_MIN_DOUBLE_LANE
-                while remaining >= KEY_ADDITIONAL_LANE:
-                    traffic_lanes += 1
-                    remaining -= KEY_ADDITIONAL_LANE
+        """
+        IRC 5:2015
+        Clause 104.3.1 – Width of carriageway
+        """
 
-        if traffic_lanes == 0:
-            return False, f"Carriageway width {carriageway_width:.0f}mm is insufficient for any lane (minimum: 4250mm)"
+        result = {
+            "clause": "IRC 5:2015 104.3.1",
+            "num_lanes": num_lanes,
+            "provided_width": carriageway_width,
+            "applicable": True,
+            "is_compliant": True,
+            "remarks": []
+        }
 
-        return True, f"Carriageway width {carriageway_width:.0f}mm supports {traffic_lanes} lane(s)"
+        if num_lanes == 1:
+            required_width = 4.25
+            return required_width # in meters
+        if num_lanes == 2:
+            required_width = 7.5
+            return required_width # in meters
+        if num_lanes > 2:
+            required_width = 7.5 + 3.5 * (num_lanes - 2)
+            return required_width # in meters
+    
+        # Base requirement
+        result["required_min_width"] = required_width
 
+        if carriageway_width < required_width:
+            result["is_compliant"] = False
+            result["remarks"].append(
+                f"Provided width {carriageway_width:.2f} m is less than "
+                f"minimum {required_width:.2f} m required for {num_lanes} lane(s)."
+            )
+
+        if not result["remarks"]:
+            result["remarks"].append("Carriageway width satisfies Clause 104.3.1.")
+
+        return result
+    
+    
     @staticmethod
     def cl_104_3_6_footpath_width(footpath, footpath_width):
         """
