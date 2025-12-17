@@ -319,68 +319,132 @@ class IRC5_2015(object):
             if footpath == KEY_FOOTPATH[1] or footpath == KEY_FOOTPATH[2]:  # Single Side or Both Sides
                 if railing_type == KEY_RAILING_TYPE[0]:  # RCC
                     railing_dims = {
-                        'railing_height': None,  # Default height in mm, should be validated by cl_109_7_2_railing_height
-                        'railing_width': 275,  # in mm
+                        'railing_height': None,
+                        'railing_width': 275,
                         'railing_type': 'RCC',
-                        'crash_barrier_height': 900,  # in mm
-                        'crash_barrier_width': 450,  # in mm
-                        'crash_barrier_radius1': 50,  # in mm
-                        'crash_barrier_radius2': 250,  # in mm
-                        'crash_barrier_top_notch': 175,  # in mm
-                        'crash_barrier_base_notch': 100,  # in mm
-                        'crash_barrier_middle_length': 550  # in mm
+                        'crash_barrier_height': 900,
+                        'crash_barrier_width': 450,
+                        'crash_barrier_radius1': 50,
+                        'crash_barrier_radius2': 250,
+                        'crash_barrier_top_notch': 175,
+                        'crash_barrier_base_notch': 100,
+                        'crash_barrier_middle_length': 550
                     }
-                    # Validate railing height
                     IRC5_2015.cl_109_7_2_railing_height(railing_dims['railing_height'])
                     design_dict.update(railing_dims)
-                    
+
                 elif railing_type == KEY_RAILING_TYPE[1]:  # steel
                     railing_dims = {
-                        'railing_height': None,  # Default height in mm, should be validated by cl_109_7_2_railing_height
-                        'railing_width': 200,  # in mm        check this
+                        'railing_height': None,
+                        'railing_width': 200,
                         'railing_type': 'steel',
-                        'crash_barrier_height': 900,  # in mm
-                        'crash_barrier_width': 450,  # in mm
-                        'crash_barrier_radius1': 50,  # in mm
-                        'crash_barrier_radius2': 250,  # in mm
-                        'crash_barrier_top_notch': 175,  # in mm
-                        'crash_barrier_base_notch': 100,  # in mm
-                        'crash_barrier_middle_length': 550  # in mm
+                        'crash_barrier_height': 900,
+                        'crash_barrier_width': 450,
+                        'crash_barrier_radius1': 50,
+                        'crash_barrier_radius2': 250,
+                        'crash_barrier_top_notch': 175,
+                        'crash_barrier_base_notch': 100,
+                        'crash_barrier_middle_length': 550
                     }
-                    # Validate railing height
                     IRC5_2015.cl_109_7_2_railing_height(railing_dims['railing_height'])
                     design_dict.update(railing_dims)
-            elif footpath == KEY_FOOTPATH[0] :  # None
+
+            elif footpath == KEY_FOOTPATH[0]:  # None
                 if crash_barrier_type == KEY_RIGID_CRASH_BARRIER_TYPE[0]:  # IRC-5R
                     crash_barrier_dims = {
-                        'crash_barrier_height': 1100,  # in mm
-                        'crash_barrier_width': 450,  # in mm
-                        'crash_barrier_radius1': 50, # in mm
-                        'crash_barrier_radius2': 250,  # in mm
-                        'crash_barrier_top_notch': 175,  # in mm
-                        'crash_barrier_base_notch': 100,  # in mm
-                        'crash_barrier_middle_length': 750  # in mm
+                        'crash_barrier_height': 1100,
+                        'crash_barrier_width': 450,
+                        'crash_barrier_radius1': 50,
+                        'crash_barrier_radius2': 250,
+                        'crash_barrier_top_notch': 175,
+                        'crash_barrier_base_notch': 100,
+                        'crash_barrier_middle_length': 750
                     }
                     design_dict.update(crash_barrier_dims)
+
                 elif crash_barrier_type == KEY_RIGID_CRASH_BARRIER_TYPE[1]:  # High Containment
                     crash_barrier_dims = {
-                        'crash_barrier_height': 1550,  # in mm
-                        'crash_barrier_width': 525,  # in mm
-                        'crash_barrier_radius1': 50, # in mm
-                        'crash_barrier_radius2': 250,  # in mm
-                        'crash_barrier_top_notch': 250,  # in mm
-                        'crash_barrier_base_notch': 100,  # in mm
-                        'crash_barrier_middle_length': 1200  # in mm
+                        'crash_barrier_height': 1550,
+                        'crash_barrier_width': 525,
+                        'crash_barrier_radius1': 50,
+                        'crash_barrier_radius2': 250,
+                        'crash_barrier_top_notch': 250,
+                        'crash_barrier_base_notch': 100,
+                        'crash_barrier_middle_length': 1200
                     }
                     design_dict.update(crash_barrier_dims)
 
+        # IRC 5 – METALLIC CRASH BARRIER (SINGLE / DOUBLE W-BEAM)
 
+        elif barrier_type == KEY_CRASH_BARRIER_TYPE[1]:  # Metallic crash barrier
 
+            # DEFAULT GEOMETRY
+            total_width_mm = 550                  #  width from RCC kerb
+            total_height_mm = 950 + 100            # Steel barrier + RCC kerb
 
+            # Default spacing between posts 
+            post_spacing_m = 1.0
+            post_spacing_mm = post_spacing_m * 1000
 
+            # MATERIAL DENSITIES (IRC 6)
+            STEEL_DENSITY = 78   # kN/m3
+            RCC_DENSITY = 25     # kN/m3
 
+            # RCC KERB LOAD (TRAPEZOID)
+            kerb_height_mm = 100
+            kerb_top_width_mm = 500
+            kerb_bottom_width_mm = 550
 
+            kerb_area_mm2 = (
+                (kerb_top_width_mm + kerb_bottom_width_mm) / 2
+            ) * kerb_height_mm
 
+            kerb_load_kNm = (kerb_area_mm2 / 1e6) * RCC_DENSITY
 
+            # STEEL AREA CALCULATION
 
+            # ISMC 150 properties (SP 6)
+            ISMC_150_AREA_MM2 = 2088
 
+            post_height_mm = 950
+            spacer_height_mm = 330
+
+            channel_area_mm2 = (
+                ISMC_150_AREA_MM2 * (post_height_mm + spacer_height_mm)
+            ) / post_spacing_mm
+
+            # W-beam properties (IRC 119)
+            w_beam_thickness_mm = 3
+            w_beam_developed_length_mm = 750
+
+            # Decide single or double W-beam
+            if crash_barrier_type == KEY_METALLIC_CRASH_BARRIER_TYPE[1]:  # Double W-beam
+                w_beam_area_mm2 = 2 * w_beam_thickness_mm * w_beam_developed_length_mm
+                w_beam_type = "Double W-beam"
+            else:  # Single W-beam
+                w_beam_area_mm2 = w_beam_thickness_mm * w_beam_developed_length_mm
+                w_beam_type = "Single W-beam"
+
+            steel_area_mm2 = channel_area_mm2 + w_beam_area_mm2
+            steel_load_kNm = (steel_area_mm2 / 1e6) * STEEL_DENSITY
+
+            # TOTAL LOAD
+            total_load_kNm = steel_load_kNm + kerb_load_kNm
+
+            # UPDATE DESIGN DICTIONARY
+            design_dict.update({
+                
+                'crash_barrier_width': total_width_mm,
+                'crash_barrier_height': total_height_mm,
+                'post_spacing_m': post_spacing_m,
+
+                # Output load
+                'crash_barrier_load_kNm': round(total_load_kNm, 3),
+
+                # Trace / debug values 
+                'steel_area_mm2': round(steel_area_mm2, 1),
+                'kerb_area_mm2': round(kerb_area_mm2, 1),
+                'metallic_barrier_type': w_beam_type
+            })
+
+        return design_dict
