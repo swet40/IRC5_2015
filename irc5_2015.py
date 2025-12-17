@@ -319,32 +319,32 @@ class IRC5_2015(object):
             if footpath == KEY_FOOTPATH[1] or footpath == KEY_FOOTPATH[2]:  # Single Side or Both Sides
                 if railing_type == KEY_RAILING_TYPE[0]:  # RCC
                     railing_dims = {
-                        'railing_height': None,
-                        'railing_width': 275,
+                        'railing_height': None,  # Default height in mm, should be validated by cl_109_7_2_railing_height
+                        'railing_width': 275,  # in mm
                         'railing_type': 'RCC',
-                        'crash_barrier_height': 900,
-                        'crash_barrier_width': 450,
-                        'crash_barrier_radius1': 50,
-                        'crash_barrier_radius2': 250,
-                        'crash_barrier_top_notch': 175,
-                        'crash_barrier_base_notch': 100,
-                        'crash_barrier_middle_length': 550
+                        'crash_barrier_height': 900,  # in mm
+                        'crash_barrier_width': 450,  # in mm
+                        'crash_barrier_radius1': 50,  # in mm
+                        'crash_barrier_radius2': 250,  # in mm
+                        'crash_barrier_top_notch': 175,  # in mm
+                        'crash_barrier_base_notch': 100,  # in mm
+                        'crash_barrier_middle_length': 550  # in mm
                     }
                     IRC5_2015.cl_109_7_2_railing_height(railing_dims['railing_height'])
                     design_dict.update(railing_dims)
 
                 elif railing_type == KEY_RAILING_TYPE[1]:  # steel
                     railing_dims = {
-                        'railing_height': None,
-                        'railing_width': 200,
+                        'railing_height': None,  # Default height in mm, should be validated by cl_109_7_2_railing_height
+                        'railing_width': 200,  # in mm        check this
                         'railing_type': 'steel',
-                        'crash_barrier_height': 900,
-                        'crash_barrier_width': 450,
-                        'crash_barrier_radius1': 50,
-                        'crash_barrier_radius2': 250,
-                        'crash_barrier_top_notch': 175,
-                        'crash_barrier_base_notch': 100,
-                        'crash_barrier_middle_length': 550
+                        'crash_barrier_height': 900,  # in mm
+                        'crash_barrier_width': 450,  # in mm
+                        'crash_barrier_radius1': 50,  # in mm
+                        'crash_barrier_radius2': 250,  # in mm
+                        'crash_barrier_top_notch': 175,  # in mm
+                        'crash_barrier_base_notch': 100,  # in mm
+                        'crash_barrier_middle_length': 550  # in mm
                     }
                     IRC5_2015.cl_109_7_2_railing_height(railing_dims['railing_height'])
                     design_dict.update(railing_dims)
@@ -352,25 +352,25 @@ class IRC5_2015(object):
             elif footpath == KEY_FOOTPATH[0]:  # None
                 if crash_barrier_type == KEY_RIGID_CRASH_BARRIER_TYPE[0]:  # IRC-5R
                     crash_barrier_dims = {
-                        'crash_barrier_height': 1100,
-                        'crash_barrier_width': 450,
-                        'crash_barrier_radius1': 50,
-                        'crash_barrier_radius2': 250,
-                        'crash_barrier_top_notch': 175,
-                        'crash_barrier_base_notch': 100,
-                        'crash_barrier_middle_length': 750
+                        'crash_barrier_height': 1100, #in mm
+                        'crash_barrier_width': 450, #in mm
+                        'crash_barrier_radius1': 50, #in mm
+                        'crash_barrier_radius2': 250, #in mm
+                        'crash_barrier_top_notch': 175, #in mm
+                        'crash_barrier_base_notch': 100, #in mm
+                        'crash_barrier_middle_length': 750 #in mm
                     }
                     design_dict.update(crash_barrier_dims)
 
                 elif crash_barrier_type == KEY_RIGID_CRASH_BARRIER_TYPE[1]:  # High Containment
                     crash_barrier_dims = {
-                        'crash_barrier_height': 1550,
-                        'crash_barrier_width': 525,
-                        'crash_barrier_radius1': 50,
-                        'crash_barrier_radius2': 250,
-                        'crash_barrier_top_notch': 250,
-                        'crash_barrier_base_notch': 100,
-                        'crash_barrier_middle_length': 1200
+                        'crash_barrier_height': 1550, #in mm
+                        'crash_barrier_width': 525, #in mm
+                        'crash_barrier_radius1': 50, #in mm
+                        'crash_barrier_radius2': 250, #in mm
+                        'crash_barrier_top_notch': 250, #in mm
+                        'crash_barrier_base_notch': 100, #in mm
+                        'crash_barrier_middle_length': 1200 #in mm
                     }
                     design_dict.update(crash_barrier_dims)
 
