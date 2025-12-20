@@ -27,7 +27,14 @@ KEY_RAILING_TYPE = ['RCC', 'steel']
 KEY_MIN_LOGITUDINAL_GRADIENT = 0.3  # in percent
 KEY_MAX_BRIDGE_LENGTH_SINGLE_CURVE = 30  # in meters
 KEY_RIGID_CRASH_BARRIER_TYPE = ['IRC-5R', 'High Containment']
+# Metallic crash barrier sub-types
+KEY_METALLIC_CRASH_BARRIER_TYPE = ['Single W-beam', 'Double W-beam']
 
 KEY_MIN_SINGLE_LANE = 4.25  # in meters
 KEY_MIN_DOUBLE_LANE = 7.5  # in meters  
 KEY_ADDITIONAL_LANE = 3.5  # in meters
+KEY_MEDIAN_TYPE = [
+    'Raised Kerb',
+    'RCC Crash Barrier',
+    'Metallic Crash Barrier'
+]
