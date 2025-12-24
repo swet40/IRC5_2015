@@ -327,81 +327,141 @@ class IRC5_2015(object):
         if wearing_coat == KEY_WEARING_COAT[0] or wearing_coat == KEY_WEARING_COAT[1]:
             return True
 
-
     @staticmethod
-    def cl_109_6_3_shapes(
-        barrier_type,
-        footpath,
-        railing_type,
-        design_dict,
-        crash_barrier_type,
-        median_type=None
-    ):
+    def cl_109_6_3_shapes(barrier_type, footpath, railing_type, design_dict, crash_barrier_type):
+        
+        if barrier_type == KEY_CRASH_BARRIER_TYPE[2]:  # Rigid
+            if footpath == KEY_FOOTPATH[1] or footpath == KEY_FOOTPATH[2]:
+                if railing_type == KEY_RAILING_TYPE[0]:  # RCC
+                    railing_dims = {
+                        'railing_height': None,
+                        'railing_width': 275,
+                        'railing_type': 'RCC',
+                        'crash_barrier_height': 900,
+                        'crash_barrier_width': 450,
+                        'crash_barrier_radius1': 50,
+                        'crash_barrier_radius2': 250,
+                        'crash_barrier_top_notch': 175,
+                        'crash_barrier_base_notch': 100,
+                        'crash_barrier_middle_length': 550
+                    }
+                    IRC5_2015.cl_109_7_2_railing_height(railing_dims['railing_height'])
+                    design_dict.update(railing_dims)
 
-        # EDGE – METALLIC CRASH BARRIER (FIG. 4)
-        if barrier_type == KEY_CRASH_BARRIER_TYPE[1]:  # Semi-rigid (metallic)
+                elif railing_type == KEY_RAILING_TYPE[1]:  # steel
+                    railing_dims = {
+                        'railing_height': None,
+                        'railing_width': 200,
+                        'railing_type': 'steel',
+                        'crash_barrier_height': 900,
+                        'crash_barrier_width': 450,
+                        'crash_barrier_radius1': 50,
+                        'crash_barrier_radius2': 250,
+                        'crash_barrier_top_notch': 175,
+                        'crash_barrier_base_notch': 100,
+                        'crash_barrier_middle_length': 550
+                    }
+                    IRC5_2015.cl_109_7_2_railing_height(railing_dims['railing_height'])
+                    design_dict.update(railing_dims)
 
-            geom = metallic_crash_barrier_geometry(crash_barrier_type)
+            elif footpath == KEY_FOOTPATH[0]:
+                if crash_barrier_type == KEY_RIGID_CRASH_BARRIER_TYPE[0]:  # IRC-5R
+                    design_dict.update({
+                        'crash_barrier_height': 1100,
+                        'crash_barrier_width': 450,
+                        'crash_barrier_radius1': 50,
+                        'crash_barrier_radius2': 250,
+                        'crash_barrier_top_notch': 175,
+                        'crash_barrier_base_notch': 100,
+                        'crash_barrier_middle_length': 750
+                    })
 
-            steel_load = steel_load_from_area(geom['steel_area_mm2'])
-            kerb_load = rcc_load_from_area(geom['kerb_area_mm2'])
+                elif crash_barrier_type == KEY_RIGID_CRASH_BARRIER_TYPE[1]:  # High containment
+                    design_dict.update({
+                        'crash_barrier_height': 1550,
+                        'crash_barrier_width': 525,
+                        'crash_barrier_radius1': 50,
+                        'crash_barrier_radius2': 250,
+                        'crash_barrier_top_notch': 250,
+                        'crash_barrier_base_notch': 100,
+                        'crash_barrier_middle_length': 1200
+                    })
 
-            total_load = steel_load + kerb_load
+        # METALLIC CRASH BARRIER – EDGE (IRC Fig. 4)
+        elif barrier_type == KEY_CRASH_BARRIER_TYPE[1]:  # Semi-rigid
 
-            design_dict.update(geom)
             design_dict.update({
-                'crash_barrier_load_kNm': round(total_load, 3)
+                # Overall geometry
+                'crash_barrier_width_mm': 550,
+                'crash_barrier_height_mm': 950 + 100,
+
+                # RCC kerb
+                'kerb_height_mm': 100,
+                'kerb_top_width_mm': 500,
+                'kerb_bottom_width_mm': 550,
+
+                # Steel post + spacer (ISMC 150)
+                'post_section_area_mm2': 2088,
+                'post_height_mm': 950,
+                'spacer_height_mm': 330,
+                'post_spacing_mm': 1000,
+
+                # W-beam
+                'w_beam_thickness_mm': 3,
+                'w_beam_developed_length_mm': 750,
+                'number_of_w_beams': (
+                    2 if crash_barrier_type == KEY_METALLIC_CRASH_BARRIER_TYPE[1] else 1
+                )
             })
 
-            return design_dict
+        # MEDIAN – FIG 5(a): RAISED KERB
+        elif barrier_type == KEY_MEDIAN_TYPE[0]:
 
-
-        # MEDIANS – IRC FIG. 5
-        if median_type == KEY_MEDIAN_TYPE[0]:  # Fig. 5(a) Raised kerb
-
-            geom = median_raised_kerb_geometry()
-            kerb_load = rcc_load_from_area(geom['median_kerb_area_mm2'])
-
-            design_dict.update(geom)
             design_dict.update({
-                'median_load_kNm': round(kerb_load, 3)
+                'median_width_mm': 1200,
+                'kerb_height_mm': 100,
+                'kerb_top_width_mm': 500,
+                'kerb_bottom_width_mm': 550
             })
 
-            return design_dict
+        # MEDIAN – FIG 5(b): RCC CRASH BARRIER
+        elif barrier_type == KEY_MEDIAN_TYPE[1]:
 
-
-        elif median_type == KEY_MEDIAN_TYPE[1]:  # Fig. 5(b) RCC crash barrier
-
-            geom = median_rcc_crash_barrier_geometry()
-
-            kerb_load = rcc_load_from_area(geom['median_kerb_area_mm2'])
-            barrier_load = rcc_load_from_area(geom['rcc_barrier_area_mm2'])
-
-            total_load = kerb_load + barrier_load
-
-            design_dict.update(geom)
             design_dict.update({
-                'median_load_kNm': round(total_load, 3)
+                'median_width_mm': 1200,
+
+                # RCC barrier
+                'barrier_height_mm': 900,
+                'barrier_top_width_mm': 175,
+                'barrier_bottom_width_mm': 450,
+
+                # RCC kerb
+                'kerb_height_mm': 100,
+                'kerb_top_width_mm': 500,
+                'kerb_bottom_width_mm': 550
             })
 
-            return design_dict
+        # MEDIAN – FIG 5(c): METALLIC CRASH BARRIER
+        elif barrier_type == KEY_MEDIAN_TYPE[2]:
 
-
-        elif median_type == KEY_MEDIAN_TYPE[2]:  # Fig. 5(c) Metallic crash barrier
-
-            geom = median_metallic_crash_barrier_geometry()
-
-            steel_load = steel_load_from_area(geom['median_steel_area_mm2'])
-            kerb_load = rcc_load_from_area(geom['median_kerb_area_mm2'])
-
-            total_load = steel_load + kerb_load
-
-            design_dict.update(geom)
             design_dict.update({
-                'median_load_kNm': round(total_load, 3)
+                'median_width_mm': 1200,
+
+                # Same as edge metallic barrier
+                'kerb_height_mm': 100,
+                'kerb_top_width_mm': 500,
+                'kerb_bottom_width_mm': 550,
+
+                'post_section_area_mm2': 2088,
+                'post_height_mm': 950,
+                'spacer_height_mm': 330,
+                'post_spacing_mm': 1000,
+
+                'w_beam_thickness_mm': 3,
+                'w_beam_developed_length_mm': 750,
+                'number_of_w_beams': (
+                    2 if crash_barrier_type == KEY_METALLIC_CRASH_BARRIER_TYPE[1] else 1
+                )
             })
-
-            return design_dict
-
 
         return design_dict
